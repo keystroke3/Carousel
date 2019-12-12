@@ -25,80 +25,99 @@
 #                                                                       #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
-
-
 PDIR="$HOME/.config/polybar/"
-LAUNCH="polybar-msg cmd restart"
-
-#These are the two colors to be alternated
 color1='${colors.xcolor15}'
-color2='${colors.black}'
+color2='${colors.xcolor15}'
+lightcolor=xcolor15
+darkcolor=xcolor15
 
-
-white1(){
-    sed -i -e "0,/^shade1/ s/shade1.*/shade1 = $color1/" $PDIR/bubbles.ini
-    sed -i -e "0,/^shade2/ s/shade2.*/shade2 = $color2/" $PDIR/bubbles.ini
-    sed -i -e "0,/^background/ s/background.*/background = $\{colors.white\}/" $PDIR/bubbles.ini
-    sed -i -e "0,/^CURRENT/ s/CURRENT.*/CURRENT=white1/" $PDIR/scripts/theme-change-prompt.sh
+white1() {
+    sed -i -e "0,/^shade1/ s/shade1.*/shade1 = $color1/" "$PDIR/bubbles.ini"
+    sed -i -e "0,/^shade2/ s/shade2.*/shade2 = $color2/" "$PDIR/bubbles.ini"
+    sed -i -e "0,/^background/ s/background.*/background = $\{colors.white\}/" "$PDIR/bubbles.ini"
+    sed -i -e "0,/^current/ s/current.*/current=white1/"  "$PDIR/scripts/theme-change-prompt.sh"
+    sed -i -e "0,/^lightcolor/ s/lightcolor.*/lightcolor=$lightcolor/"  "$PDIR/scripts/theme-change-prompt.sh"
+	sed -i -e "0,/^darkcolor/ s/darkcolor.*/darkcolor=$darkcolor/"  "$PDIR/scripts/theme-change-prompt.sh"
 }
 
-white2(){
-    sed -i -e "0,/^shade1/ s/shade1.*/shade1 = $color2/" $PDIR/bubbles.ini
-    sed -i -e "0,/^shade2/ s/shade2.*/shade2 = $color1/" $PDIR/bubbles.ini
-    sed -i -e "0,/^background/ s/background.*/background = $\{colors.white\}/" $PDIR/bubbles.ini
-    sed -i -e "0,/^CURRENT/ s/CURRENT.*/CURRENT=white2/" $PDIR/scripts/theme-change-prompt.sh
+white2() {
+    sed -i -e "0,/^shade1/ s/shade1.*/shade1 = $color2/" "$PDIR/bubbles.ini"
+    sed -i -e "0,/^shade2/ s/shade2.*/shade2 = $color1/" "$PDIR/bubbles.ini"
+    sed -i -e "0,/^background/ s/background.*/background = $\{colors.white\}/" "$PDIR/bubbles.ini"
+    sed -i -e "0,/^current/ s/current.*/current=white2/"  "$PDIR/scripts/theme-change-prompt.sh"
+    sed -i -e "0,/^lightcolor/ s/lightcolor.*/lightcolor=$lightcolor/"  "$PDIR/scripts/theme-change-prompt.sh"
+	sed -i -e "0,/^darkcolor/ s/darkcolor.*/darkcolor=$darkcolor/"  "$PDIR/scripts/theme-change-prompt.sh"
+}
+
+clear1() {
+    sed -i -e "0,/^shade1/ s/shade1.*/shade1 = $color1/" "$PDIR/bubbles.ini"
+    sed -i -e "0,/^shade2/ s/shade2.*/shade2 = $color2/" "$PDIR/bubbles.ini"
+    sed -i -e "0,/^background/ s/background.*/background = $\{colors.transparent\}/" "$PDIR/bubbles.ini"
+    sed -i -e "0,/^current/ s/current.*/current=clear1/"  "$PDIR/scripts/theme-change-prompt.sh"
+    sed -i -e "0,/^lightcolor/ s/lightcolor.*/lightcolor=$lightcolor/"  "$PDIR/scripts/theme-change-prompt.sh"
+	sed -i -e "0,/^darkcolor/ s/darkcolor.*/darkcolor=$darkcolor/"  "$PDIR/scripts/theme-change-prompt.sh"
+}
+
+clear2() {
+    sed -i -e "0,/^shade1/ s/shade1.*/shade1 = $color2/" "$PDIR/bubbles.ini"
+    sed -i -e "0,/^shade2/ s/shade2.*/shade2 = $color1/" "$PDIR/bubbles.ini"
+    sed -i -e "0,/^background/ s/background.*/background = $\{colors.transparent\}/" "$PDIR/bubbles.ini"
+    sed -i -e "0,/^current/ s/current.*/current=clear2/"  "$PDIR/scripts/theme-change-prompt.sh"
+    sed -i -e "0,/^lightcolor/ s/lightcolor.*/lightcolor=$lightcolor/"  "$PDIR/scripts/theme-change-prompt.sh"
+	sed -i -e "0,/^darkcolor/ s/darkcolor.*/darkcolor=$darkcolor/"  "$PDIR/scripts/theme-change-prompt.sh"
+}
+
+black1() {
+    sed -i -e "0,/^shade1/ s/shade1.*/shade1 = $color1/" "$PDIR/bubbles.ini"
+    sed -i -e "0,/^shade2/ s/shade2.*/shade2 = $color2/" "$PDIR/bubbles.ini"
+    sed -i -e "0,/^background/ s/background.*/background = $\{colors.black\}/" "$PDIR/bubbles.ini"
+    sed -i -e "0,/^current/ s/current.*/current=black1/"  "$PDIR/scripts/theme-change-prompt.sh"
+    sed -i -e "0,/^lightcolor/ s/lightcolor.*/lightcolor=$lightcolor/"  "$PDIR/scripts/theme-change-prompt.sh"
+	sed -i -e "0,/^darkcolor/ s/darkcolor.*/darkcolor=$darkcolor/"  "$PDIR/scripts/theme-change-prompt.sh"
+}
+
+black2() {
+    sed -i -e "0,/^shade1/ s/shade1.*/shade1 = $color2/" "$PDIR/bubbles.ini"
+    sed -i -e "0,/^shade2/ s/shade2.*/shade2 = $color1/" "$PDIR/bubbles.ini"
+    sed -i -e "0,/^background/ s/background.*/background = $\{colors.black\}/" "$PDIR/bubbles.ini"
+    sed -i -e "0,/^current/ s/current.*/current=black2/"  "$PDIR/scripts/theme-change-prompt.sh"
+    sed -i -e "0,/^lightcolor/ s/lightcolor.*/lightcolor=$lightcolor/"  "$PDIR/scripts/theme-change-prompt.sh"
+	sed -i -e "0,/^darkcolor/ s/darkcolor.*/darkcolor=$darkcolor/"  "$PDIR/scripts/theme-change-prompt.sh"
+}
+
+gray1() {
+    sed -i -e "0,/^shade1/ s/shade1.*/shade1 = $color1/" "$PDIR/bubbles.ini"
+    sed -i -e "0,/^shade2/ s/shade2.*/shade2 = $color2/" "$PDIR/bubbles.ini"
+    sed -i -e "0,/^background/ s/background.*/background = $\{colors.gray\}/" "$PDIR/bubbles.ini"
+    sed -i -e "0,/^current/ s/current.*/current=gray1/"  "$PDIR/scripts/theme-change-prompt.sh"
+    sed -i -e "0,/^lightcolor/ s/lightcolor.*/lightcolor=$lightcolor/"  "$PDIR/scripts/theme-change-prompt.sh"
+	sed -i -e "0,/^darkcolor/ s/darkcolor.*/darkcolor=$darkcolor/"  "$PDIR/scripts/theme-change-prompt.sh"
+}
+
+gray2() {
+    sed -i -e "0,/^shade1/ s/shade1.*/shade1 = $color2/" "$PDIR/bubbles.ini"
+    sed -i -e "0,/^shade2/ s/shade2.*/shade2 = $color1/" "$PDIR/bubbles.ini"
+    sed -i -e "0,/^background/ s/background.*/background = $\{colors.gray\}/" "$PDIR/bubbles.ini"
+    sed -i -e "0,/^current/ s/current.*/current=gray2/"  "$PDIR/scripts/theme-change-prompt.sh"
+    sed -i -e "0,/^lightcolor/ s/lightcolor.*/lightcolor=$lightcolor/"  "$PDIR/scripts/theme-change-prompt.sh"
+	sed -i -e "0,/^darkcolor/ s/darkcolor.*/darkcolor=$darkcolor/"  "$PDIR/scripts/theme-change-prompt.sh"
 }
 
 
-transparent1(){
-    sed -i -e "0,/^shade1/ s/shade1.*/shade1 = $color1/" $PDIR/bubbles.ini
-    sed -i -e "0,/^shade2/ s/shade2.*/shade2 = $color2/" $PDIR/bubbles.ini
-    sed -i -e "0,/^background/ s/background.*/background = $\{colors.transparent\}/" $PDIR/bubbles.ini
-    sed -i -e "0,/^CURRENT/ s/CURRENT.*/CURRENT=transparent1/" $PDIR/scripts/theme-change-prompt.sh
-}
-
-transparent2(){
-    sed -i -e "0,/^shade1/ s/shade1.*/shade1 = $color2/" $PDIR/bubbles.ini
-    sed -i -e "0,/^shade2/ s/shade2.*/shade2 = $color1/" $PDIR/bubbles.ini
-    sed -i -e "0,/^background/ s/background.*/background = $\{colors.transparent\}/" $PDIR/bubbles.ini
-    sed -i -e "0,/^CURRENT/ s/CURRENT.*/CURRENT=transparent2/" $PDIR/scripts/theme-change-prompt.sh
-
-}
-
-black1(){
-    sed -i -e "0,/^shade1/ s/shade1.*/shade1 = $color1/" $PDIR/bubbles.ini
-    sed -i -e "0,/^shade2/ s/shade2.*/shade2 = $color2/" $PDIR/bubbles.ini
-    sed -i -e "0,/^background/ s/background.*/background = $\{colors.black\}/" $PDIR/bubbles.ini
-    sed -i -e "0,/^CURRENT/ s/CURRENT.*/CURRENT=black1/" $PDIR/scripts/theme-change-prompt.sh
-}
-
-black2(){
-    sed -i -e "0,/^shade1/ s/shade1.*/shade1 = $color2/" $PDIR/bubbles.ini
-    sed -i -e "0,/^shade2/ s/shade2.*/shade2 = $color1/" $PDIR/bubbles.ini
-    sed -i -e "0,/^background/ s/background.*/background = $\{colors.black\}/" $PDIR/bubbles.ini
-    sed -i -e "0,/^CURRENT/ s/CURRENT.*/CURRENT=black2/" $PDIR/scripts/theme-change-prompt.sh
-}
-
-if [[ $1 = "white1" ]]; then
-    white1  
-elif [[ $1 = "white2" ]]; then
-    white2
-elif [[ $1 = "transparent1" ]]; then
-    transparent1
-elif [[ $1 = "transparent2" ]]; then
-    transparent2
-elif [[ $1 = "black1" ]]; then
-    black1
-elif [[ $1 = "black2" ]]; then
-    black2
-else
-echo "optins are:
--white1         -white2
--dark1          -dark2
--transparent1   -transparent2"
-fi
-
-
-
-
-# EOF
+case $1 in
+white1) white1 ;;
+white2) clear2 ;;
+clear1) clear1 ;;
+clear2) black2 ;;
+black1) black1 ;;
+black2) white2 ;;
+gray1) gray1 ;;
+gray2) gray2 ;;
+"") echo "No options provided. Exiting ..."; exit ;;
+*) echo "Available optins are:
+        -black1         -black2
+        -white1         -white2
+        -clear1         -clear2
+        
+        You entered $1" ;;
+esac
