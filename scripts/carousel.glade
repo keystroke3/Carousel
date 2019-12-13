@@ -4,7 +4,8 @@
   <requires lib="gtk+" version="3.20"/>
   <object class="GtkWindow" id="main_window">
     <property name="can_focus">False</property>
-    <child>
+    <property name="window_position">center-always</property>
+    <child type="titlebar">
       <placeholder/>
     </child>
     <child>
@@ -100,7 +101,7 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="caps_lock_warning">False</property>
-                    <property name="placeholder_text" translatable="yes">rgba(r,g,b,a) or #rrggbbaa</property>
+                    <property name="placeholder_text" translatable="yes">rgb(r,g,b) or #rrggbb</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -113,7 +114,7 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="caps_lock_warning">False</property>
-                    <property name="placeholder_text" translatable="yes">rgba(r,g,b,a) or #rrggbbaa</property>
+                    <property name="placeholder_text" translatable="yes">rgb(r,g,b) or #rrggbb</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -126,7 +127,7 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="caps_lock_warning">False</property>
-                    <property name="placeholder_text" translatable="yes">rgba(r,g,b,a) or #rrggbbaa</property>
+                    <property name="placeholder_text" translatable="yes">rgb(r,g,b) or #rrggbb</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -146,6 +147,7 @@
               <object class="GtkBox">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
+                <property name="halign">end</property>
                 <property name="valign">end</property>
                 <property name="orientation">vertical</property>
                 <property name="spacing">7</property>
@@ -154,6 +156,7 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
+                    <property name="halign">start</property>
                     <property name="use_alpha">True</property>
                     <property name="alpha">65535</property>
                     <property name="rgba">rgb(0,0,0)</property>

@@ -140,7 +140,7 @@ popup(){
 # configurations 
 case "$1" in
 	--show)
-	python ~/Carousel/scripts/carousel.py ;;
+	python /home/ted/.config/polybar/scripts/carousel.py ;;
 	*) echo "running" ;;
 esac
 

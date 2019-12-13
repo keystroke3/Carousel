@@ -1,17 +1,27 @@
 #!/usr/bin/env python
 
 from gi.repository import Gtk
+from os.path import expanduser
 import gi
-import argparse
+import configparser
 gi.require_version("Gtk", "3.0")
+
+home = expanduser("~")
+working_dir = f"{home}/.config/polybar/scripts"
 
 
 class MainWindow:
     def __init__(self):
-        self.gladefile = "gtkwindow.glade"
+        self.gladefile = f"{working_dir}/carousel.glade"
         self.builder = Gtk.Builder()
         self.builder.add_from_file(self.gladefile)
         self.builder.connect_signals(self)
+
+        parser = configparser.ConfigParser()
+        config = parser.read("/home/ted/Carousel/bubbles.ini")
+        self.shade1 = parser.get("colors", "shade1")
+        self.shade2 = parser.get("colors", "shade2")
+        self.background = parser.get("colors", "background")
 
         apply = self.builder.get_object("apply")
         apply.connect("clicked", self.apply_colors)
@@ -26,26 +36,41 @@ class MainWindow:
         self.bg_color_obj.connect("color-set", self.pick_bg_color)
 
         self.fg_entry1 = self.builder.get_object("fg_entry1")
-        self.fg_entry1.connect("changed", self.get_fg_color1)
+        self.fg_entry1.set_text(self.hex_to_rgb(self.shade1))
         self.fg_entry2 = self.builder.get_object("fg_entry2")
-        self.fg_entry2.connect("changed", self.get_fg_color2)
+        self.fg_entry2.set_text(self.hex_to_rgb(self.shade2))
         self.bg_entry = self.builder.get_object("bg_entry")
-        self.bg_entry.connect("changed", self.get_bg_color)
+        self.bg_entry.set_text(self.hex_to_rgb(self.background))
 
         window = self.builder.get_object("main_window")
         window.connect("delete-event", Gtk.main_quit)
+        # window.move(20, 30)
         window.show_all()
 
     def rgba_to_hex(self, rgb_color):
-        rgba = (rgb_color.strip("rgba()").split(","))
-        red = int(rgba[0])
-        green = int(rgba[1])
-        blue = int(rgba[2])
-        try:
-            alpha = int(rgba[3])
-            return '#{:02x}{:02x}{:02x}{:02x}'.format(red, green, blue, alpha)
-        except IndexError:
-            return '#{:02x}{:02x}{:02x}'.format(red, green, blue)
+        if "#" in rgb_color:
+            return rgb_color
+        else:
+            rgba = (rgb_color.strip("rgba()").split(","))
+            red = int(rgba[0])
+            green = int(rgba[1])
+            blue = int(rgba[2])
+            try:
+                alpha = int(float(rgba[3])*100)
+                return '#{:02x}{:02x}{:02x}{:02x}'.format(red, green, blue, alpha)
+            except IndexError:
+                return '#{:02x}{:02x}{:02x}'.format(red, green, blue)
+
+    def hex_to_rgb(self, hex_color):
+        hex_color = hex_color.strip("#")
+        if len(hex_color) < 7:
+            return f"rgba{tuple(int(hex_color[i:i+2], 16) for i in (0, 2, 4))}"
+        else:
+            color_space = [j for j in (
+                int(hex_color[i:i+2], 16) for i in (0, 2, 4))]
+            alpha = int(hex_color[6:8], 16)/100
+            color_space.append(alpha)
+            return f"rgba{tuple(color_space)}"
 
     def get_fg_color1(self, widget):
         value = self.fg_entry1.get_text()
@@ -58,7 +83,6 @@ class MainWindow:
     def get_bg_color(self, widget):
         value = self.bg_entry.get_text()
         self.bg_color = self.rgba_to_hex(value)
-        print(self.bg_color)
 
     def pick_fg_color1(self, widget):
         fg_picked1 = self.fg_color1_obj.get_rgba().to_string()
@@ -76,24 +100,27 @@ class MainWindow:
         self.get_bg_color(widget)
 
     def apply_colors(self, widget):
-        with open("/home/ted/Carousel/bubbles.ini", "r") as file:
+        with open(f"{home}/bubbles.ini", "r") as file:
             lines = file.readlines()
             line = next(line for line in lines if "shade1 = " in line)
             pos = lines.index(line)
             lines.remove(line)
+            self.get_fg_color1(widget)
             lines.insert(pos, f"shade1 = {self.fg_color1}\n")
 
             line = next(line for line in lines if "shade2 = " in line)
             pos = lines.index(line)
             lines.remove(line)
+            self.get_fg_color2(widget)
             lines.insert(pos, f"shade2 = {self.fg_color2}\n")
 
             line = next(line for line in lines if "background = " in line)
             pos = lines.index(line)
+            self.get_bg_color(widget)
             lines.remove(line)
             lines.insert(pos, f"background = {self.bg_color}\n")
 
-        with open("/home/ted/Carousel/bubbles.ini", "w") as file:
+        with open(f"{home}/bubbles.ini", "w") as file:
             file.writelines(lines)
 
 
