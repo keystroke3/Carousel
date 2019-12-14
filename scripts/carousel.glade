@@ -70,6 +70,18 @@
                   </packing>
                 </child>
                 <child>
+                  <object class="GtkAccelLabel" id="fg_label3">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="label" translatable="yes">Color 3</property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">2</property>
+                  </packing>
+                </child>
+                <child>
                   <object class="GtkAccelLabel" id="bg_label">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
@@ -79,7 +91,7 @@
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">True</property>
-                    <property name="position">2</property>
+                    <property name="position">3</property>
                   </packing>
                 </child>
               </object>
@@ -123,7 +135,7 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkEntry" id="bg_entry">
+                  <object class="GtkEntry" id="fg_entry3">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="caps_lock_warning">False</property>
@@ -133,6 +145,19 @@
                     <property name="expand">False</property>
                     <property name="fill">True</property>
                     <property name="position">2</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkEntry" id="bg_entry">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="caps_lock_warning">False</property>
+                    <property name="placeholder_text" translatable="yes">rgb(r,g,b) or #rrggbb</property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">3</property>
                   </packing>
                 </child>
               </object>
@@ -182,7 +207,7 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkColorButton" id="bg_color">
+                  <object class="GtkColorButton" id="fg_color3">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
@@ -193,6 +218,20 @@
                     <property name="expand">False</property>
                     <property name="fill">True</property>
                     <property name="position">2</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkColorButton" id="bg_color">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">True</property>
+                    <property name="use_alpha">True</property>
+                    <property name="rgba">rgb(0,0,0)</property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">3</property>
                   </packing>
                 </child>
               </object>

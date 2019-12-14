@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from gi.repository import Gtk
+from gi.repository import Gtk, Gdk
 from os.path import expanduser
 import gi
 import configparser
@@ -8,6 +8,7 @@ gi.require_version("Gtk", "3.0")
 
 home = expanduser("~")
 working_dir = f"{home}/.config/polybar/scripts"
+config_file = f"{home}/.config/polybar/bubbles.ini"
 
 
 class MainWindow:
@@ -18,9 +19,10 @@ class MainWindow:
         self.builder.connect_signals(self)
 
         parser = configparser.ConfigParser()
-        config = parser.read("/home/ted/Carousel/bubbles.ini")
+        parser.read(config_file)
         self.shade1 = parser.get("colors", "shade1")
         self.shade2 = parser.get("colors", "shade2")
+        self.shade3 = parser.get("colors", "shade3")
         self.background = parser.get("colors", "background")
 
         apply = self.builder.get_object("apply")
@@ -32,14 +34,22 @@ class MainWindow:
         self.fg_color1_obj.connect("color-set", self.pick_fg_color1)
         self.fg_color2_obj = self.builder.get_object("fg_color2")
         self.fg_color2_obj.connect("color-set", self.pick_fg_color2)
+        self.fg_color3_obj = self.builder.get_object("fg_color3")
+        self.fg_color3_obj.connect("color-set", self.pick_fg_color3)
         self.bg_color_obj = self.builder.get_object("bg_color")
         self.bg_color_obj.connect("color-set", self.pick_bg_color)
 
         self.fg_entry1 = self.builder.get_object("fg_entry1")
         self.fg_entry1.set_text(self.hex_to_rgb(self.shade1))
+        # print(self.hex_to_gtk_color(self.shade1))
+        # self.fg_color1_obj.set_rgba(self.hex_to_gtk_color(self.shade1))
         self.fg_entry2 = self.builder.get_object("fg_entry2")
         self.fg_entry2.set_text(self.hex_to_rgb(self.shade2))
+        self.fg_entry3 = self.builder.get_object("fg_entry3")
+        self.fg_entry3.set_text(self.hex_to_rgb(self.shade3))
+        # self.fg_color2_obj.set_rgba(self.hex_to_gtk_color(self.shade2))
         self.bg_entry = self.builder.get_object("bg_entry")
+        # self.bg_color_obj.set_rgba(self.hex_to_gtk_color(self.background))
         self.bg_entry.set_text(self.hex_to_rgb(self.background))
 
         window = self.builder.get_object("main_window")
@@ -57,9 +67,25 @@ class MainWindow:
             blue = int(rgba[2])
             try:
                 alpha = int(float(rgba[3])*100)
-                return '#{:02x}{:02x}{:02x}{:02x}'.format(red, green, blue, alpha)
+                return '#{:02x}{:02x}{:02x}{:02x}'.format(red, green,
+                                                          blue, alpha)
             except IndexError:
                 return '#{:02x}{:02x}{:02x}'.format(red, green, blue)
+
+    def hex_to_gtk_color(self, mem_color):
+        rgba_values = self.hex_to_rgb(mem_color)
+        raw_values = (rgba_values.strip("rgba()")).split(",")
+        conv_raw_values = [int(v)/256 for v in raw_values]
+        gtk_set = Gdk.RGBA()
+        # return gtk_set.parse('#123456')
+        gtk_set.red = int(conv_raw_values[0])/256
+        gtk_set.green = int(conv_raw_values[1])/256
+        gtk_set.blue = int(conv_raw_values[2])/256
+        if len(conv_raw_values) == 4:
+            gtk_set.alpha = (int(conv_raw_values[3])*100)/256
+        else:
+            gtk_set.alpha = 1.0
+        return gtk_set
 
     def hex_to_rgb(self, hex_color):
         hex_color = hex_color.strip("#")
@@ -79,6 +105,10 @@ class MainWindow:
     def get_fg_color2(self, widget):
         value = self.fg_entry2.get_text()
         self.fg_color2 = self.rgba_to_hex(value)
+    
+    def get_fg_color3(self, widget):
+        value = self.fg_entry3.get_text()
+        self.fg_color3 = self.rgba_to_hex(value)
 
     def get_bg_color(self, widget):
         value = self.bg_entry.get_text()
@@ -94,13 +124,18 @@ class MainWindow:
         self.fg_entry2.set_text(fg_pickd2)
         self.get_fg_color2(widget)
 
+    def pick_fg_color3(self, widget):
+        fg_pickd3 = self.fg_color3_obj.get_rgba().to_string()
+        self.fg_entry3.set_text(fg_pickd3)
+        self.get_fg_color3(widget)
+
     def pick_bg_color(self, widget):
         bg_picked = self.bg_color_obj.get_rgba().to_string()
         self.bg_entry.set_text(bg_picked)
         self.get_bg_color(widget)
 
     def apply_colors(self, widget):
-        with open(f"{home}/bubbles.ini", "r") as file:
+        with open(config_file, "r") as file:
             lines = file.readlines()
             line = next(line for line in lines if "shade1 = " in line)
             pos = lines.index(line)
@@ -113,6 +148,12 @@ class MainWindow:
             lines.remove(line)
             self.get_fg_color2(widget)
             lines.insert(pos, f"shade2 = {self.fg_color2}\n")
+            
+            line = next(line for line in lines if "shade3 = " in line)
+            pos = lines.index(line)
+            lines.remove(line)
+            self.get_fg_color3(widget)
+            lines.insert(pos, f"shade3 = {self.fg_color3}\n")
 
             line = next(line for line in lines if "background = " in line)
             pos = lines.index(line)
@@ -120,7 +161,7 @@ class MainWindow:
             lines.remove(line)
             lines.insert(pos, f"background = {self.bg_color}\n")
 
-        with open(f"{home}/bubbles.ini", "w") as file:
+        with open(config_file, "w") as file:
             file.writelines(lines)
 
 
