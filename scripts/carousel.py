@@ -54,7 +54,6 @@ class MainWindow:
 
         window = self.builder.get_object("main_window")
         window.connect("delete-event", Gtk.main_quit)
-        # window.move(20, 30)
         window.show_all()
 
     def rgba_to_hex(self, rgb_color):

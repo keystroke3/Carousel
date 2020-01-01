@@ -107,6 +107,7 @@
                 <property name="can_focus">False</property>
                 <property name="margin_left">1</property>
                 <property name="orientation">vertical</property>
+                <property name="spacing">10</property>
                 <property name="baseline_position">bottom</property>
                 <child>
                   <object class="GtkEntry" id="fg_entry1">
