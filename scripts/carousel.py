@@ -1,14 +1,14 @@
 #!/usr/bin/env python
 
-from gi.repository import Gtk, Gdk
 from os.path import expanduser
-import gi
 import configparser
+import gi
 gi.require_version("Gtk", "3.0")
+from gi.repository import Gtk, Gdk
 
 home = expanduser("~")
 working_dir = f"{home}/.config/polybar/scripts"
-config_file = f"{home}/.config/polybar/bubbles.ini"
+config_file = f"{home}/.config/polybar/config.ini"
 
 
 class MainWindow:
@@ -23,6 +23,7 @@ class MainWindow:
         self.shade1 = parser.get("colors", "shade1")
         self.shade2 = parser.get("colors", "shade2")
         self.shade3 = parser.get("colors", "shade3")
+        self.shade4 = parser.get("colors", "shade4")
         self.background = parser.get("colors", "background")
 
         apply = self.builder.get_object("apply")
@@ -36,6 +37,8 @@ class MainWindow:
         self.fg_color2_obj.connect("color-set", self.pick_fg_color2)
         self.fg_color3_obj = self.builder.get_object("fg_color3")
         self.fg_color3_obj.connect("color-set", self.pick_fg_color3)
+        self.fg_color4_obj = self.builder.get_object("fg_color4")
+        self.fg_color4_obj.connect("color-set", self.pick_fg_color4)
         self.bg_color_obj = self.builder.get_object("bg_color")
         self.bg_color_obj.connect("color-set", self.pick_bg_color)
 
@@ -47,6 +50,8 @@ class MainWindow:
         self.fg_entry2.set_text(self.hex_to_rgb(self.shade2))
         self.fg_entry3 = self.builder.get_object("fg_entry3")
         self.fg_entry3.set_text(self.hex_to_rgb(self.shade3))
+        self.fg_entry4 = self.builder.get_object("fg_entry4")
+        self.fg_entry4.set_text(self.hex_to_rgb(self.shade4))
         # self.fg_color2_obj.set_rgba(self.hex_to_gtk_color(self.shade2))
         self.bg_entry = self.builder.get_object("bg_entry")
         # self.bg_color_obj.set_rgba(self.hex_to_gtk_color(self.background))
@@ -76,7 +81,6 @@ class MainWindow:
         raw_values = (rgba_values.strip("rgba()")).split(",")
         conv_raw_values = [int(v)/256 for v in raw_values]
         gtk_set = Gdk.RGBA()
-        # return gtk_set.parse('#123456')
         gtk_set.red = int(conv_raw_values[0])/256
         gtk_set.green = int(conv_raw_values[1])/256
         gtk_set.blue = int(conv_raw_values[2])/256
@@ -104,10 +108,14 @@ class MainWindow:
     def get_fg_color2(self, widget):
         value = self.fg_entry2.get_text()
         self.fg_color2 = self.rgba_to_hex(value)
-    
+
     def get_fg_color3(self, widget):
         value = self.fg_entry3.get_text()
         self.fg_color3 = self.rgba_to_hex(value)
+
+    def get_fg_color4(self, widget):
+        value = self.fg_entry4.get_text()
+        self.fg_color4 = self.rgba_to_hex(value)
 
     def get_bg_color(self, widget):
         value = self.bg_entry.get_text()
@@ -126,6 +134,11 @@ class MainWindow:
     def pick_fg_color3(self, widget):
         fg_pickd3 = self.fg_color3_obj.get_rgba().to_string()
         self.fg_entry3.set_text(fg_pickd3)
+        self.get_fg_color3(widget)
+
+    def pick_fg_color4(self, widget):
+        fg_pickd4 = self.fg_color4_obj.get_rgba().to_string()
+        self.fg_entry4.set_text(fg_pickd4)
         self.get_fg_color3(widget)
 
     def pick_bg_color(self, widget):
@@ -147,12 +160,18 @@ class MainWindow:
             lines.remove(line)
             self.get_fg_color2(widget)
             lines.insert(pos, f"shade2 = {self.fg_color2}\n")
-            
+
             line = next(line for line in lines if "shade3 = " in line)
             pos = lines.index(line)
             lines.remove(line)
             self.get_fg_color3(widget)
             lines.insert(pos, f"shade3 = {self.fg_color3}\n")
+
+            line = next(line for line in lines if "shade4 = " in line)
+            pos = lines.index(line)
+            lines.remove(line)
+            self.get_fg_color4(widget)
+            lines.insert(pos, f"shade4 = {self.fg_color4}\n")
 
             line = next(line for line in lines if "background = " in line)
             pos = lines.index(line)

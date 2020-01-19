@@ -184,7 +184,7 @@
               <object class="GtkAccelLabel" id="fg_label4">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="label" translatable="yes">Color 4</property>
+                <property name="label" translatable="yes">Color 3</property>
               </object>
               <packing>
                 <property name="left_attach">0</property>
