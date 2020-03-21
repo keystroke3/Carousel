@@ -63,7 +63,7 @@ def main():
         while getATCommand(s, s.recv(128)):
             pass
     except OSError:
-        print(" ")
+        print("")
 
 
 if __name__ == "__main__":
