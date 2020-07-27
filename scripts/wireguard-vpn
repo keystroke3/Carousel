@@ -1,0 +1,10 @@
+#!/bin/sh
+if [ $# -eq 0 ] 
+then
+    ping -c 1 -w 2 8.8.8.8 > /dev/null && (ping -c 1 -w 2 10.66.66.1 >/dev/null && echo " " || echo " ") || echo " "
+else
+    options="$connect\n$disconnect"
+    chosen="$(echo -e "connect\ndisconnect" | rofi -dmenu -location 3 -theme-str '#window { width: 15%; height: 20%; }' -i -p 'Wireguard VPN' )"
+    [ "$chosen" == "connect" ] && wg-quick up wg0 && exit || [ "$chosen" == "disconnect" ] && wg-quick down wg0
+    # [ "$chosen" == "connect" ] && echo "up wg0" && exit || [ "$chosen" == "disconnect" ] && echo "down wg0"
+fi
