@@ -1,10 +1,22 @@
 #!/bin/sh
 if [ $# -eq 0 ] 
 then
-    ping -c 1 -w 2 8.8.8.8 > /dev/null && (ping -c 1 -w 2 10.66.66.1 >/dev/null && echo " " || echo " ") || echo " "
+    ping -c 1 -w 2 8.8.8.8 &> /dev/null && (ping -c 1 -w 2 10.6.0.1 &>/dev/null && echo " " || echo " ") || echo " "
 else
-    options="$connect\n$disconnect"
-    chosen="$(echo -e "connect\ndisconnect" | rofi -dmenu -location 3 -theme-str '#window { width: 15%; height: 20%; }' -i -p 'Wireguard VPN' )"
-    [ "$chosen" == "connect" ] && wg-quick up wg0 && exit || [ "$chosen" == "disconnect" ] && wg-quick down wg0
-    # [ "$chosen" == "connect" ] && echo "up wg0" && exit || [ "$chosen" == "disconnect" ] && echo "down wg0"
+    case $1 in
+        "change" )
+            options="$connect\n$disconnect"
+            chosen="$(echo -e "connect\ndisconnect" | rofi -dmenu -location 3 -theme-str '#window { width: 15%; height: 22%; y-offset: 5%; }' -i -p 'Wireguard VPN' )"
+            [ "$chosen" == "connect" ] && wg-quick up wg0 && exit || [ "$chosen" == "disconnect" ] && wg-quick down wg0
+            ;;
+        "connect" )
+            wg-quick up wg0
+            ;;
+        "disconnect" )
+            wg-quick down wg0
+            ;;
+        "toggle" )
+            ip a | grep wg0 &> /dev/null && wg-quick down wg0 || wg-quick up wg0
+    esac
+
 fi

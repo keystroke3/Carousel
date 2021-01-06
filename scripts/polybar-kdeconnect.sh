@@ -1,26 +1,12 @@
 #!/usr/bin/env bash
 
 # CONFIGURATION
-LOCATION=0
-YOFFSET=0
-XOFFSET=0
-WIDTH=12
-WIDTH_WIDE=24
-THEME=solarized
-
-# Color Settings of Icon shown in Polybar
-COLOR_DISCONNECTED='#000'       # Device Disconnected
-COLOR_NEWDEVICE='#ff0'          # New Device
-COLOR_BATTERY_90='#fff'         # Battery >= 90
-COLOR_BATTERY_80='#ccc'         # Battery >= 80
-COLOR_BATTERY_70='#aaa'         # Battery >= 70
-COLOR_BATTERY_60='#888'         # Battery >= 60
-COLOR_BATTERY_50='#666'         # Battery >= 50
-COLOR_BATTERY_LOW='#f00'        # Battery <  50
+LOCATION=5
+THEMESTR='#window { width: 15% ; y-offset: -5%; x-offset: -10px; }'
 
 # Icons shown in Polybar
-ICON_SMARTPHONE=''
-ICON_TABLET=''
+ICON_SMARTPHONE='  '
+ICON_TABLET='  '
 SEPERATOR='|'
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
@@ -36,7 +22,7 @@ show_devices (){
         istrust="$(qdbus org.kde.kdeconnect "/modules/kdeconnect/devices/$deviceid" org.kde.kdeconnect.device.isTrusted)"
         if [ "$isreach" = "true" ] && [ "$istrust" = "true" ]
         then
-            battery="$(qdbus org.kde.kdeconnect "/modules/kdeconnect/devices/$deviceid" org.kde.kdeconnect.device.battery.charge)"
+            battery="$(qdbus org.kde.kdeconnect "/modules/kdeconnect/devices/$deviceid/battery" org.kde.kdeconnect.device.battery.charge)"
             icon=$(get_icon "$battery" "$devicetype")
             devices+="%{A1:$DIR/polybar-kdeconnect.sh -n '$devicename' -i $deviceid -b $battery -m:}$icon%{A}$SEPERATOR"
         elif [ "$isreach" = "false" ] && [ "$istrust" = "true" ]
@@ -57,7 +43,7 @@ show_devices (){
 }
 
 show_menu () {
-    menu="$(rofi -sep "|" -dmenu -i -p "$DEV_NAME" -location $LOCATION -yoffset $YOFFSET -xoffset $XOFFSET -theme $THEME -width $WIDTH -hide-scrollbar -line-padding 4 -padding 20 -lines 5 <<< "Battery: $DEV_BATTERY%|Ping|Find Device|Send File|Browse Files|Unpair")"
+    menu="$(rofi -sep "|" -dmenu -i -p "$DEV_NAME" -location $LOCATION -theme-str "$THEMESTR" <<< "Battery: $DEV_BATTERY%|Ping|Find Device|Send File|Browse Files|Unpair")"
                 case "$menu" in
                     *Ping) qdbus org.kde.kdeconnect "/modules/kdeconnect/devices/$DEV_ID/ping" org.kde.kdeconnect.device.ping.sendPing ;;
                     *'Find Device') qdbus org.kde.kdeconnect "/modules/kdeconnect/devices/$DEV_ID/findmyphone" org.kde.kdeconnect.device.findmyphone.ring ;;
@@ -73,14 +59,14 @@ show_menu () {
 }
 
 show_pmenu () {
-    menu="$(rofi -sep "|" -dmenu -i -p "$DEV_NAME" -location $LOCATION -yoffset $YOFFSET -xoffset $XOFFSET -theme $THEME -width $WIDTH -hide-scrollbar -line-padding 1 -padding 20 -lines 1<<<"Pair Device")"
+    menu="$(rofi -sep "|" -dmenu -i -p "$DEV_NAME" -location $LOCATION -theme-str "$THEMESTR" <<<"Pair Device")"
                 case "$menu" in
                     *'Pair Device') qdbus org.kde.kdeconnect "/modules/kdeconnect/devices/$DEV_ID" org.kde.kdeconnect.device.requestPair
                 esac
 }
 
 show_pmenu2 () {
-    menu="$(rofi -sep "|" -dmenu -i -p "$1 has sent a pairing request" -location $LOCATION -yoffset $YOFFSET -xoffset $XOFFSET -theme $THEME -width $WIDTH_WIDE -hide-scrollbar -line-padding 4 -padding 20 -lines 2 <<< "Accept|Reject")"
+    menu="$(rofi -sep "|" -dmenu -i -p "$1 has sent a pairing request" -location $LOCATION -theme-str "$THEMESTR" <<< "Accept|Reject")"
                 case "$menu" in
                     *'Accept') qdbus org.kde.kdeconnect "/modules/kdeconnect/devices/$2" org.kde.kdeconnect.device.acceptPairing ;;
                     *) qdbus org.kde.kdeconnect "/modules/kdeconnect/devices/$2" org.kde.kdeconnect.device.rejectPairing
@@ -95,14 +81,15 @@ get_icon () {
         icon=$ICON_SMARTPHONE
     fi
     case $1 in
-    "-1")     ICON="%{F$COLOR_DISCONNECTED}$icon%{F-}" ;;
-    "-2")     ICON="%{F$COLOR_NEWDEVICE}$icon%{F-}" ;;
-    5*)     ICON="%{F$COLOR_BATTERY_50}$icon%{F-}" ;;
-    6*)     ICON="%{F$COLOR_BATTERY_60}$icon%{F-}" ;;
-    7*)     ICON="%{F$COLOR_BATTERY_70}$icon%{F-}" ;;
-    8*)     ICON="%{F$COLOR_BATTERY_80}$icon%{F-}" ;;
-    9*|100) ICON="%{F$COLOR_BATTERY_90}$icon%{F-}" ;;
-    *)      ICON="%{F$COLOR_BATTERY_LOW}$icon%{F-}" ;;
+    -1)
+        ICON="%{T10}$icon%{T-}"
+        ;;
+    -2)
+        ICON="%{T10}%{F#a91}$icon%{F-}%{T-}"
+        ;;
+    *)
+        ICON="%{T10}%{F#eee}$icon%{F-}%{T-}"
+
     esac
     echo $ICON
 }
