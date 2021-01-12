@@ -1,22 +1,33 @@
 #!/bin/sh
+THEME='#window { width: 15%; height: 25%; y-offset: 5%; }' 
+COUNTRIES=$(ls -1 /etc/wireguard | sed -e 's/\..*$//')
+LAST=$(cat ~/.cache/wireguard)
+
 if [ $# -eq 0 ] 
 then
     ping -c 1 -w 2 8.8.8.8 &> /dev/null && (ping -c 1 -w 2 10.6.0.1 &>/dev/null && echo " " || echo " ") || echo " "
 else
     case $1 in
         "change" )
-            options="$connect\n$disconnect"
-            chosen="$(echo -e "connect\ndisconnect" | rofi -dmenu -location 3 -theme-str '#window { width: 15%; height: 22%; y-offset: 5%; }' -i -p 'Wireguard VPN' )"
-            [ "$chosen" == "connect" ] && wg-quick up wg0 && exit || [ "$chosen" == "disconnect" ] && wg-quick down wg0
+            chosen="$(echo -e "connect($LAST)\ndisconnect\nswitch" | rofi -dmenu -location 3 -theme-str "$THEME" -i -p 'Wireguard VPN' )"
+            case $chosen in
+                "connect($LAST)" )
+                    wg-quick up "$LAST" ;;
+                "disconnect" )
+                    wg-quick down "$LAST" ;;
+                "switch" )
+                    chosen="$(echo "$COUNTRIES" | rofi -dmenu -location 3 -theme-str "$THEME" -i -p 'Wireguard VPN' )"
+                    wg-quick up $chosen
+                    echo "$chosen" > ~/.cache/wireguard
+                    ;;
+            esac
             ;;
         "connect" )
-            wg-quick up wg0
-            ;;
+            wg-quick up $LAST ;;
         "disconnect" )
-            wg-quick down wg0
-            ;;
+            wg-quick down $LAST ;;
         "toggle" )
-            ip a | grep wg0 &> /dev/null && wg-quick down wg0 || wg-quick up wg0
+            ip a | grep POINTOPOINT &> /dev/null && wg-quick down $LAST || wg-quick up $LAST
     esac
 
 fi
