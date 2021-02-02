@@ -2,32 +2,50 @@
 THEME='#window { width: 15%; height: 25%; y-offset: 5%; }' 
 COUNTRIES=$(ls -1 /etc/wireguard | sed -e 's/\..*$//')
 LAST=$(cat ~/.cache/wireguard)
+get_status(){
+    ping -c 1 -w 2 8.8.8.8 &> /dev/null && (ping -c 1 -w 2 10.6.0.1 &>/dev/null && echo "%{T4}  %{T-}%{T2}("$LAST")%{T-} " || echo "%{T4}  %{T-} ") || echo  "%{T4}  %{T-} "
+}
+connect(){
+    wg-quick up "$LAST"
+}
 
-if [ $# -eq 0 ] 
-then
-    ping -c 1 -w 2 8.8.8.8 &> /dev/null && (ping -c 1 -w 2 10.6.0.1 &>/dev/null && echo " " || echo " ") || echo " "
-else
-    case $1 in
-        "change" )
+disconnect(){
+    wg-quick down "$LAST"
+}
+show_menu(){
             chosen="$(echo -e "connect($LAST)\ndisconnect\nswitch" | rofi -dmenu -location 3 -theme-str "$THEME" -i -p 'Wireguard VPN' )"
             case $chosen in
                 "connect($LAST)" )
-                    wg-quick up "$LAST" ;;
+                    connect ;;
                 "disconnect" )
-                    wg-quick down "$LAST" ;;
+                    disconnect ;;
                 "switch" )
                     chosen="$(echo "$COUNTRIES" | rofi -dmenu -location 3 -theme-str "$THEME" -i -p 'Wireguard VPN' )"
-                    wg-quick up $chosen
+                    if wg; then
+                        wg-quick up $chosen
+                    else
+                        disconnect
+                        wg-quick up $chosen
+                    fi
                     echo "$chosen" > ~/.cache/wireguard
                     ;;
             esac
-            ;;
-        "connect" )
-            wg-quick up $LAST ;;
-        "disconnect" )
-            wg-quick down $LAST ;;
-        "toggle" )
-            ip a | grep POINTOPOINT &> /dev/null && wg-quick down $LAST || wg-quick up $LAST
-    esac
+}
 
-fi
+while getopts 'smcdt' arg
+do
+    case $arg in
+        "s" )
+            get_status ;;
+        "m" )
+            show_menu ;;
+        "c" )
+            connect ;;
+        "d" )
+            disconnect ;;
+        "t" )
+            ip a | grep POINTOPOINT &> /dev/null && disconnect || connect
+            ;;
+    esac
+    
+done
