@@ -6,7 +6,7 @@ osd='no'
 inc='2'
 capvol='no'
 maxvol='200'
-autosync='yes'
+autosync='no'
 
 # Muted status
 # yes: muted
@@ -17,7 +17,15 @@ limit=$((100 - inc))
 maxlimit=$((maxvol - inc))
 
 reloadSink() {
-    active_sink=$(pacmd list-sinks | awk '/* index:/{print $3}')
+    active_sink=$(pactl list sinks | awk '/Sink / {print $2}' | sed s/^.//)
+}
+
+function getCurVol {
+    curVol=$(pactl list sinks | awk '/\tVolume:/' | grep -o -P '.{0,3}%' | sed 's/^.\(.*\).$/\1/' | head -1)
+}
+
+function volMuteStatus {
+    curStatus=$(pactl list sinks | grep -A 15 "Sink #$active_sink" | awk '/Mute/{ print $2}')
 }
 
 function volUp {
@@ -55,7 +63,6 @@ function volUp {
 }
 
 function volDown {
-
     pactl set-sink-volume "$active_sink" "-$inc%"
     getCurVol
 
@@ -85,9 +92,6 @@ function volSync {
     done
 }
 
-function getCurVol {
-    curVol=$(pacmd list-sinks | grep -A 15 "index: $active_sink$" | grep 'volume:' | grep -E -v 'base volume:' | awk -F : '{print $3}' | grep -o -P '.{0,3}%'| sed s/.$// | tr -d ' ')
-}
 
 function volMute {
     case "$1" in
@@ -108,10 +112,6 @@ function volMute {
         qdbus org.kde.kded /modules/kosd showVolume ${curVol} ${status}
     fi
 
-}
-
-function volMuteStatus {
-    curStatus=$(pacmd list-sinks | grep -A 15 "index: $active_sink$" | awk '/muted/{ print $2}')
 }
 
 # Prints output for bar
