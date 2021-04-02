@@ -1,23 +1,13 @@
 #!/bin/bash
-interface=`ip route | grep -oPm1 "(?<=dev )[^ ]+"`
-declare -A bytes
-down_file=/sys/class/net/"$interface"/statistics/rx_bytes
-up_file=/sys/class/net/"$interface"/statistics/tx_bytes
-
-total_up_file=$HOME/.config/polybar/scripts/total-up
-total_down_file=$HOME/.config/polybar/scripts/total-down
-prev_down_file=$HOME/.config/polybar/scripts/prev-down
-prev_up_file=$HOME/.config/polybar/scripts/prev-up
-
-files=("$total_up_file" "$total_down_file" "$prev_down_file" "$prev_up_file")
+files=("total-up" "total-down" "prev-down" "prev-up")
 for file in ${files[@]};do
     [ -f $file ] && : || echo "0" > $file
 done
 
-total_up=$(cat $total_up_file) 
-total_down=$(cat $total_down_file)
-prev_down=$(cat $prev_down_file)
-prev_up=$(cat $prev_up_file)
+total_up=$(cat total-up)
+total_down=$(cat total-down)
+prev_down=$(cat prev-down)
+prev_up=$(cat prev-up)
 
 format() {
     if [ "$1" -eq 0 ] || [ "$1" -lt 1000 ]; then
@@ -31,7 +21,10 @@ format() {
 }
 
 calc(){
-
+    interface=`ip route | grep -oPm1 "(?<=dev )[^ ]+"`
+    declare -A bytes
+    down_file=/sys/class/net/"$interface"/statistics/rx_bytes
+    up_file=/sys/class/net/"$interface"/statistics/tx_bytes
     if [ -f $down_file ];then
         current_down=$(cat $down_file)
         current_up=$(cat $up_file)
@@ -39,10 +32,10 @@ calc(){
         down_diff=$(( current_down-prev_down ))
         new_up=$(( total_up+up_diff ))
         new_down=$(( total_down+down_diff )) 
-        echo $current_down > $total_down_file
-        echo $current_up > $prev_up_file
-        echo $new_down > $total_down_file
-        echo $new_up > $total_up_file
+        echo $current_down > prev-down
+        echo $current_up > prev-up
+        echo $new_down > total-down
+        echo $new_up > total-up
     else
         down=0
         up=0
@@ -56,7 +49,6 @@ case $1 in
         calc
         echo $(format $new_down)/$(format $new_up) ;;
     *)
-        echo "Download: $(cat $down_file)"
-        echo "Upload: $(cat $up_file)"
+        calc
 esac
 

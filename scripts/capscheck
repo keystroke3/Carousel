@@ -1,0 +1,14 @@
+#!/usr/bin/python3
+from subprocess import check_output, run
+status = check_output('xset q | grep LED', shell=True)[65]
+if status == 48:
+    run(['polybar-msg', 'hook', 'capscheck', '1'])
+    print("Caps Off")
+else:
+    run(['polybar-msg', 'hook', 'capscheck', '2'])
+    print("Caps On")
+
+# xdotool key Caps_Lock
+# status=$(xset q | awk '/LED/ {print substr($0,length,1)}')
+# polybar-msg hook capscheck $status
+

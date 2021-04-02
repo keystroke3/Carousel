@@ -1,16 +1,19 @@
 #!/bin/sh
 THEME='#window { width: 15%; height: 25%; y-offset: 5%; }' 
-COUNTRIES=$(ls -1 /etc/wireguard | sed -e 's/\..*$//')
+CONFIGS=$(ls -1 /etc/wireguard | sed -e 's/\..*$//')
 LAST=$(cat ~/.cache/wireguard)
+ADDRESS=$(awk '/Address/ {print $NF}' "/etc/wireguard/$LAST.conf")
 get_status(){
-    ping -c 1 -w 2 8.8.8.8 &> /dev/null && (ping -c 1 -w 2 10.6.0.1 &>/dev/null && echo "%{T4}  %{T-}%{T2}("$LAST")%{T-} " || echo "%{T4}  %{T-} ") || echo  "%{T4}  %{T-} "
+    ping -c 1 -w 2 8.8.8.8 &> /dev/null && (ping -c 1 -w 2 $ADDRESS &>/dev/null && echo "%{T4}  %{T-}%{T2}("$LAST")%{T-} " || echo "%{T4}  %{T-} ") || echo  "%{T4}  %{T-} "
 }
 connect(){
     wg-quick up "$LAST"
+    timedatectl set-timezone 'America/Los_Angeles'
 }
 
 disconnect(){
     wg-quick down "$LAST"
+    timedatectl set-timezone 'Africa/Nairobi'
 }
 show_menu(){
             chosen="$(echo -e "connect($LAST)\ndisconnect\nswitch" | rofi -dmenu -location 3 -theme-str "$THEME" -i -p 'Wireguard VPN' )"
@@ -20,7 +23,7 @@ show_menu(){
                 "disconnect" )
                     disconnect ;;
                 "switch" )
-                    chosen="$(echo "$COUNTRIES" | rofi -dmenu -location 3 -theme-str "$THEME" -i -p 'Wireguard VPN' )"
+                    chosen="$(echo "$CONFIGS" | rofi -dmenu -location 3 -theme-str "$THEME" -i -p 'Wireguard VPN' )"
                     if wg; then
                         wg-quick up $chosen
                     else
