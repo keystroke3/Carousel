@@ -2,6 +2,7 @@
 
 # CONFIGURATION
 LOCATION=5
+# THEMESTR='configuration {show-icons:false;} #window { height: 40%; width: 15% ; y-offset: -5%; x-offset: -10px; }'
 THEMESTR='#window { height: 40%; width: 15% ; y-offset: -5%; x-offset: -10px; }'
 
 # Icons shown in Polybar
@@ -45,7 +46,7 @@ show_devices (){
 show_menu () {
     menu="$(rofi -sep "|" -dmenu -i -p "$DEV_NAME" -me-select-entry '' -me-accept-entry 'MouseSecondary' -location $LOCATION -theme-str "$THEMESTR" <<< "Battery: $DEV_BATTERY%|Ping|Find Device|Send File|Browse Files|Unpair")"
                 case "$menu" in
-                    *Ping) qdbus org.kde.kdeconnect "/modules/kdeconnect/devices/$DEV_ID/ping" org.kde.kdeconnect.device.ping.sendPing ;;
+                    *'Ping') qdbus org.kde.kdeconnect "/modules/kdeconnect/devices/$DEV_ID/ping" org.kde.kdeconnect.device.ping.sendPing ;;
                     *'Find Device') qdbus org.kde.kdeconnect "/modules/kdeconnect/devices/$DEV_ID/findmyphone" org.kde.kdeconnect.device.findmyphone.ring ;;
                     *'Send File') qdbus org.kde.kdeconnect "/modules/kdeconnect/devices/$DEV_ID/share" org.kde.kdeconnect.device.share.shareUrl "file://$(zenity --file-selection --multiple)" ;;
                     *'Browse Files')
@@ -93,6 +94,9 @@ get_icon () {
     esac
     echo $ICON
 }
+ping_devices(){
+    /usr/bin/kdeconnect-cli -l
+}
 
 unset DEV_ID DEV_NAME DEV_BATTERY
 while getopts 'di:n:b:mp' c
@@ -100,6 +104,7 @@ do
     # shellcheck disable=SC2220
     case $c in
         d) show_devices ;;
+        p) ping_devices ;;
         i) DEV_ID=$OPTARG ;;
         n) DEV_NAME=$OPTARG ;;
         b) DEV_BATTERY=$OPTARG ;;

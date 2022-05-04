@@ -8,12 +8,10 @@ get_status(){
 }
 connect(){
     wg-quick up "$LAST"
-    timedatectl set-timezone 'America/Los_Angeles'
 }
 
 disconnect(){
     wg-quick down "$LAST"
-    timedatectl set-timezone 'Africa/Nairobi'
 }
 show_menu(){
             chosen="$(echo -e "connect($LAST)\ndisconnect\nswitch" | rofi -dmenu -location 3 -theme-str "$THEME" -i -p 'Wireguard VPN' )"

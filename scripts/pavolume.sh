@@ -21,7 +21,7 @@ reloadSink() {
 }
 
 function getCurVol {
-    curVol=$(pactl list sinks | awk '/\tVolume:/' | grep -o -P '.{0,3}%' | sed 's/^.\(.*\).$/\1/' | head -1)
+    curVol=$(pactl list sinks | awk '/\tVolume:/' | grep -o -P '.{0,4}%' | sed 's/^.\(.*\).$/\1/' | head -1)
 }
 
 function volMuteStatus {

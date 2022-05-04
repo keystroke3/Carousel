@@ -1,4 +1,5 @@
 #!/bin/sh
+#gsimplecal &
 
 BAR_HEIGHT=22  # polybar height
 BORDER_SIZE=1  # border size from your wm settings
